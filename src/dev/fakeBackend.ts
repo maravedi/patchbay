@@ -781,6 +781,8 @@ export function install() {
     db.code.push({ id: id(), cwd, acpSessionId: null, title, modelRef: "m1", pinned: false, createdAt: now() - ago, updatedAt: now() - ago, activity, hostNode, epoch: 0, agent: "grok", agentModel: null, permissionMode: "default" });
   seed("/home/demo/Projects/nulamp", "Windows installer testing", 1000, "edit");
   seed("/home/demo/Projects/nulamp", "Release to staging", 5000, "pr");
+  // A second folder on the phone's laptop, so project drag has two rows to swap.
+  if (phoneApp) seed("/home/demo/Projects/patchbay", "Gatekeeper quarantine", 2000, "edit");
   seed("/home/demo/Projects/omnimark", "Interactive document controls", 3000, "branch", meshDemo ? "n-studio" : ME);
   seed("/home/demo/Work/omnimark", "Session overview", 9000, null, meshDemo ? "n-old" : ME);
   if (longTurns > 0) {
@@ -792,7 +794,9 @@ export function install() {
     harnessSessionId = db.code[db.code.length - 1].id;
   }
   if (meshDemo) {
-    meshMember();
+    // The phone already built its mesh in phoneMesh(). Rebuilding it here would
+    // name the laptop with the phone's name, so its sessions show up under the phone.
+    if (!phoneApp) meshMember();
     mesh.pending = [{ nodeId: "n-new", name: "travel-pc", code: "482 913" }];
     setTimeout(fakeRemoteStream, 2500);
   }
