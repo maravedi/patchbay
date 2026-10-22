@@ -239,7 +239,7 @@ fn smoke_code_agent_edit_with_permission() {
         })
     };
     manager
-        .start(sink, db.clone(), &data_dir, &session.id)
+        .start(sink, db.clone(), &data_dir, &session.id, None)
         .unwrap();
 
     let wait_for = |pred: &dyn Fn(&CodeEvent) -> bool, what: &str| {
@@ -335,7 +335,7 @@ fn smoke_code_agent_edit_with_permission() {
         Arc::new(move |env: Envelope| events.lock().unwrap().push(env))
     };
     manager
-        .start(sink2, db.clone(), &data_dir, &session.id)
+        .start(sink2, db.clone(), &data_dir, &session.id, None)
         .unwrap();
     wait_for(
         &|e| matches!(e, CodeEvent::SessionReady { loaded: true, .. }),
@@ -427,7 +427,7 @@ fn smoke_code_rewind() {
             .unwrap()
     };
 
-    manager.start(make_sink(), db.clone(), &data_dir, &session.id).unwrap();
+    manager.start(make_sink(), db.clone(), &data_dir, &session.id, None).unwrap();
     wait_count(&|e| matches!(e, CodeEvent::Status { state, .. } if state == "ready"), 1, "ready");
     prompt("please !edit");
     wait_count(&is_done, 1, "first prompt");
@@ -446,7 +446,7 @@ fn smoke_code_rewind() {
 
     std::thread::sleep(Duration::from_millis(500));
     events.lock().unwrap().clear();
-    manager.start(make_sink(), db.clone(), &data_dir, &session.id).unwrap();
+    manager.start(make_sink(), db.clone(), &data_dir, &session.id, None).unwrap();
     wait_count(
         &|e| matches!(e, CodeEvent::SessionReady { loaded: true, .. }),
         1,
@@ -544,7 +544,7 @@ fn smoke_code_rules_and_mcp() {
             .send(&session.id, AgentCmd::prompt(text))
             .unwrap()
     };
-    manager.start(sink, db.clone(), &data_dir, &session.id).unwrap();
+    manager.start(sink, db.clone(), &data_dir, &session.id, None).unwrap();
     wait_count(&|e| matches!(e, CodeEvent::Status { state, .. } if state == "ready"), 1, "ready");
     prompt("please !edit");
     wait_count(&is_done, 1, "edit prompt");
@@ -644,7 +644,7 @@ fn smoke_claude_config_toggle() {
             let events = events.clone();
             Arc::new(move |env: Envelope| events.lock().unwrap().push(env))
         };
-        manager.start(sink, db.clone(), &data_dir, &session.id).unwrap();
+        manager.start(sink, db.clone(), &data_dir, &session.id, None).unwrap();
         let t0 = Instant::now();
         while !events.lock().unwrap().iter().any(|e| matches!(&e.event, CodeEvent::Status { state, .. } if state == "ready")) {
             assert!(t0.elapsed() < Duration::from_secs(60), "agent did not start");
