@@ -49,6 +49,7 @@ import {
   ChevronRightIcon,
   CopyIcon,
   FileDiffIcon,
+  InfoIcon,
   MonitorUpIcon,
   PaperclipIcon,
   PencilIcon,
@@ -1226,6 +1227,9 @@ export function CodeView({ leading }: { leading?: ReactNode } = {}) {
             <TerminalIcon />
           </HeaderButton>
         )}
+        <HeaderButton label="Session info: IDs, agent, model" onClick={() => useStore.getState().setSessionInfoId(session.id)}>
+          <InfoIcon />
+        </HeaderButton>
         <HeaderButton label="Restart the agent and reload this session" onClick={() => start(session.id)}>
           <RestartIcon />
         </HeaderButton>
